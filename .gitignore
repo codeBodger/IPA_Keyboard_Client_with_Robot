@@ -9,3 +9,7 @@ application.windows64
 application.macosx
 out
 *.zip
+linux*
+windows*
+*amd64
+config.txt

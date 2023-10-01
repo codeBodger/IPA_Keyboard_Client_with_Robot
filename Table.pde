@@ -1,5 +1,5 @@
 static class MyTable {
-  static String[] table = new String[163];
+  static String[] table = new String[164];
   
   static void tableInit() {
     //Pulmonic Consonats
@@ -201,8 +201,8 @@ static class MyTable {
     table[148] = "\u02B2"; //j
     table[149] = "\u02E0"; //.y
     table[150] = "\u02E4"; //?|
-    
     table[151] = "\u0334"; //~
+    
     table[152] = "\u031D"; //_,
     table[153] = "\u031E"; //-,
     table[154] = "\u0318"; //-|
@@ -215,5 +215,6 @@ static class MyTable {
     table[160] = "\u207F"; //n
     table[161] = "\u02E1"; //l
     table[162] = "\u031A"; //-|
+    table[163] = "ɫ"; //l~
   }
 }
