@@ -21,6 +21,7 @@ String password = "Password Goes Here";
 Robot robot;
 Clipboard clipboard;
 
+boolean firstrun = false;
 void setup() {
   size(400,200);
   //frameRate(120);
@@ -35,6 +36,7 @@ void setup() {
     password = config[1];
   } catch (Exception e) {
     saveStrings("config.txt", new String[] {username, password});
+    firstrun = true;
   }
   
   try {
@@ -52,8 +54,15 @@ void setup() {
 }
 
 void draw() {
-  background(dataIn);
-  text(table[dataIn], 100,100);
+  if (firstrun) {
+    background(0);
+    text("Enter information into config.txt, then restart the program.\n\nClick anywhere to exit.", 10,10 , width-20,height-20);
+    noLoop();
+  }
+  else {
+    background(dataIn);
+    text(table[dataIn], 100,100);
+  }
 }
 
 // Just got data from server
@@ -72,4 +81,10 @@ void clientEvent(Client C) {
   robot.keyRelease(KeyEvent.VK_CONTROL); robot.delay(25);
 
   clipboard.setContents(cb, null);
+}
+
+void mousePressed() {
+  if (firstrun) {
+    exit();
+  }
 }
