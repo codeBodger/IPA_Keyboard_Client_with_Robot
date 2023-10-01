@@ -37,6 +37,7 @@ void setup() {
   } catch (Exception e) {
     saveStrings("config.txt", new String[] {username, password});
     firstrun = true;
+    return;
   }
   
   try {
