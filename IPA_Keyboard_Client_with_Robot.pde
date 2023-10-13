@@ -10,35 +10,28 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.Toolkit;
 
-//Server s;
+import java.util.*;
+
 Client c;
 
 int dataIn;
 String[] table = new String[163];
-String username = "Username Goes Here";
-String password = "Password Goes Here";
+String loginKey = rand64Str(18);
+PImage QRCode;
+int QRWidth = 500;
 
 Robot robot;
 Clipboard clipboard;
 
-boolean firstrun = false;
+void settings() {
+  size(QRWidth, QRWidth + 200);
+}
+
 void setup() {
-  size(400,200);
-  //frameRate(120);
-  textSize(30);
-  
   MyTable.tableInit();
   table = MyTable.table;
   
-  try {
-    String[] config = loadStrings("config.txt");
-    username = config[0];
-    password = config[1];
-  } catch (Exception e) {
-    saveStrings("config.txt", new String[] {username, password});
-    firstrun = true;
-    return;
-  }
+  writeQR(loginKey);
   
   try {
     robot = new Robot();
@@ -51,19 +44,20 @@ void setup() {
   //Connect to the server at 3.21.93.254
   c = new Client(this, "3.139.30.141", 8000);
   //Connect to the server on the local machine
-  c.write("`" + username + password); //backtick = 96
+  c.write("`" + loginKey); //backtick = 96
 }
 
 void draw() {
-  if (firstrun) {
-    background(0);
-    text("Enter information into config.txt, then restart the program.\n\nClick anywhere to exit.", 10,10 , width-20,height-20);
-    noLoop();
-  }
-  else {
-    background(dataIn);
-    text(table[dataIn], 100,100);
-  }
+  background(dataIn);
+  image(QRCode, 0,0, width, width);
+  
+  fill((dataIn + 128) % 256);
+  
+  textSize(30);
+  text(loginKey, 20, width + 50);
+  
+  textSize(100);
+  text(table[dataIn], 20,width + 150);
 }
 
 // Just got data from server
@@ -84,8 +78,42 @@ void clientEvent(Client C) {
   clipboard.setContents(cb, null);
 }
 
-void mousePressed() {
-  if (firstrun) {
-    exit();
+String rand64Str(int length) {
+  final char[] ALPHABET = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', '!', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', '/', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', 'i', '-', '_'};
+  String out = "";
+  for (int i = 0; i < length; i++) {
+    out += ALPHABET[int(random(64))];
+  }
+  return out;
+}
+
+// This function is modified from here: https://www.dropbox.com/s/jezpiz9dhb3aidd/QRLib.rar?dl=0&file_subpath=%2FQRLib
+// Some more info: https://forum.processing.org/two/discussion/15572/qr-code-library-for-processing-3-0-2-windows-linux-macosx-android-writeqr-and-readqr.html
+void writeQR(String myCodeText){
+  int size = 125;
+  try {
+      Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
+      hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+      QRCodeWriter qrCodeWriter = new QRCodeWriter();
+      BitMatrix byteMatrix = qrCodeWriter.encode(myCodeText,BarcodeFormat.QR_CODE, size, size, hintMap);
+      int CrunchifyWidth = byteMatrix.getWidth();
+      
+      QRCode = createImage(CrunchifyWidth, CrunchifyWidth, RGB);
+      QRCode.loadPixels();
+      for (int i = 0; i < QRCode.pixels.length; i++) {
+      QRCode.pixels[i] = #FFFFFF;
+      }
+      QRCode.updatePixels();
+      
+      for (int i = 0; i < CrunchifyWidth; i++) {
+          for (int j = 0; j < CrunchifyWidth; j++) {
+              if (byteMatrix.get(i, j)) {
+                  QRCode.set(i, j, #000000);
+              }
+          }
+      }
+  } 
+  catch (Exception e) {
+    e.printStackTrace();
   }
 }
