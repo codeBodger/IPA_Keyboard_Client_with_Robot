@@ -1,0 +1,8 @@
+Compile and test for MacOS
+Test for Linux
+	Ubuntu
+	Archlinux
+	Debian
+	ChromeOS
+	Other common distros?
+Use alt codes/option codes/whatever they're called on linux
