@@ -4,7 +4,8 @@
 #define MyAppName "IPA Keyboard Computer"
 #define MyAppVersion "v2.0.1a"
 #define MyAppURL "https://phonetics.ling.udel.edu/"
-#define MyAppExeName "IPA_Keyboard_Client_with_Robot.exe"                   
+#define MyAppExeName "IPA_Keyboard_Client_with_Robot.exe"
+#define MyRootDir "C:\Users\rnack\OneDrive\Desktop\Summer Scholars\IPA_Keyboard_Client_with_Robot"                   
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -24,6 +25,8 @@ PrivilegesRequiredOverridesAllowed=dialog
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+OutputBaseFilename=win64-{#MyAppVersion}-setup-no-java
+OutputDir="{#MyRootDir}\versions\{#MyAppVersion}\"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -32,9 +35,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\rnack\OneDrive\Desktop\Summer Scholars\IPA_Keyboard_Client_with_Robot\windows-amd64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\rnack\OneDrive\Desktop\Summer Scholars\IPA_Keyboard_Client_with_Robot\windows-amd64\lib\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\rnack\OneDrive\Desktop\Summer Scholars\IPA_Keyboard_Client_with_Robot\windows-amd64\source\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyRootDir}\windows-amd64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyRootDir}\windows-amd64\lib\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyRootDir}\windows-amd64\source\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
