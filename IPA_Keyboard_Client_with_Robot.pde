@@ -1,14 +1,14 @@
-/*
-REQUIRES espanso.  
-REQUIRES MODIFIED CONFIG AND MATCH FILES
-*/
-
 import processing.net.*;
 
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.*;
+
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.Toolkit;
 
 import java.util.*;
 
@@ -21,6 +21,7 @@ PImage QRCode;
 int QRWidth = 500;
 
 Robot robot;
+Clipboard clipboard;
 
 void settings() {
   size(QRWidth, QRWidth + 200);
@@ -34,7 +35,7 @@ void setup() {
   
   try {
     robot = new Robot();
-    robot.setAutoWaitForIdle(true);
+    clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
   } catch (AWTException e) {
     exit();
   }
@@ -61,44 +62,19 @@ void draw() {
 // Just got data from server
 void clientEvent(Client C) {
   dataIn = C.read();
-  
-  int[] keyCodes = keysToType(dataIn);
-  
-  for (int code : keyCodes) {
-    print(code, "\t");
-    robot.keyPress(code);
-  }
   println(dataIn, table[dataIn]);
-}
 
-int[] keysToType(int data) {
-  int[] out = new int[] {
-    KeyEvent.VK_SEMICOLON,
-    KeyEvent.VK_BACK_SLASH,
-    KeyEvent.VK_I,
-    KeyEvent.VK_P,
-    KeyEvent.VK_A,
-    KeyEvent.VK_0,
-    KeyEvent.VK_0,
-    KeyEvent.VK_0
-  };
-  String Data = str(data);
-  switch (Data.length()) {
-    case 1:
-      out[out.length-1] = (int)Data.charAt(0);
-    break;
-    
-    case 2:
-      out[out.length-2] = (int)Data.charAt(0);
-      out[out.length-1] = (int)Data.charAt(1);
-    break;
-    
-    default:
-      out[out.length-3] = (int)Data.charAt(0);
-      out[out.length-2] = (int)Data.charAt(1);
-      out[out.length-1] = (int)Data.charAt(2);
-  }
-  return out;
+  Transferable cb = clipboard.getContents(null);
+
+  StringSelection stringSelection = new StringSelection(table[dataIn]);
+  clipboard.setContents(stringSelection, null); robot.delay(25);
+  
+  robot.keyPress(KeyEvent.VK_CONTROL); robot.delay(25);
+  robot.keyPress(KeyEvent.VK_V); robot.delay(25);
+  robot.keyRelease(KeyEvent.VK_V); robot.delay(25);
+  robot.keyRelease(KeyEvent.VK_CONTROL); robot.delay(25);
+
+  clipboard.setContents(cb, null);
 }
 
 String rand64Str(int length) {
