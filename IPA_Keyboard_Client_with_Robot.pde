@@ -66,7 +66,7 @@ void clientEvent(Client C) {
 
   Transferable cb = clipboard.getContents(null);
 
-  StringSelection stringSelection = new StringSelection(table[dataIn]);
+  StringSelection stringSelection = new StringSelection(str(table[dataIn]));
   clipboard.setContents(stringSelection, null); robot.delay(25);
   
   robot.keyPress(KeyEvent.VK_CONTROL); robot.delay(25);
