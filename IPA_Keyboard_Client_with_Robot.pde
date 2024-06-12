@@ -39,8 +39,8 @@ void setup() {
     exit();
   }
   
-  //Connect to the server at 3.21.93.254
-  c = new Client(this, "3.139.30.141", 8000);
+  //Connect to the server at phonetics.ling.udel.edu
+  c = new Client(this, "phonetics.ling.udel.edu", 8000);
   //Connect to the server on the local machine
   c.write("`" + loginKey); //backtick = 96
 }
