@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "IPA Keyboard Computer"
-#define MyAppVersion "v2.0.1a"
+#define MyAppVersion "v2.1.0a"
 #define MyAppURL "https://phonetics.ling.udel.edu/"
 #define MyAppExeName "IPA_Keyboard_Client_with_Robot.exe"                   
 #define MyRootDir "C:\Users\rnack\OneDrive\Desktop\Summer Scholars\IPA_Keyboard_Client_with_Robot"                   
