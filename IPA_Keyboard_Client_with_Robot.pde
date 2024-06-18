@@ -61,7 +61,25 @@ void draw() {
 
 // Just got data from server
 void clientEvent(Client C) {
-  dataIn = C.read();
+  int data = C.read();
+  if (data >= table.length) {
+    switch (data) {
+      case 254:
+        println("Connection successful.");
+      return;
+      
+      case 253:
+        println("You've been timed out.");
+      return;
+
+      case 255:
+      default:
+        println("An unknown error ocurred.");
+      return;
+    }
+  }
+  
+  dataIn = data;
   println(dataIn, table[dataIn]);
 
   Transferable cb = clipboard.getContents(null);
