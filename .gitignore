@@ -1,3 +1,6 @@
 windows-*
 *-amd64
 versions/*
+__pycache__/*
+*.spec
+build/*
