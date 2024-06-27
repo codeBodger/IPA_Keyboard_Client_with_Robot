@@ -1,15 +1,22 @@
 #!/bin/bash
 
-echo This doesn't do anything yet; it's just for planning
-
 version=v$1
-# if $version==v echo Please provide a version! & exit
+if [ $version == v ]; then
+    echo Please provide a version!
+    exit
+fi
 
-# if it's an X11 system:
-# python -m PyInstaller -F --distpath ./versions/$version -n IPA_Keyboard_Client-X11-$version IPA_Keyboard_Client_with_Robot.py
+if [ $XDG_SESSION_TYPE == x11 ]; then
+    python -m PyInstaller -F --distpath ./versions/$version -n IPA_Keyboard_Client-x11-$version IPA_Keyboard_Client_with_Robot.py
+    exit
+fi
+
+if [ $XDG_SESSION_TYPE == wayland ]; then
+    python -m PyInstaller -F --distpath ./versions/$version -n IPA_Keyboard_Client-wayland-$version IPA_Keyboard_Client_with_Robot.py
+    exit
+fi
 
 # else if it's an OSX system:
 # python -m PyInstaller -F --distpath ./versions/$version -n IPA_Keyboard_Client-OSX-$version IPA_Keyboard_Client_with_Robot.py
 
-# else:
-# echo This system isn't yet supported
+echo This system isn't yet supported!
