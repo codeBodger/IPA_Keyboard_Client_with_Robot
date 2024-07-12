@@ -48,6 +48,7 @@ def client():
 				case 253:
 					APP.children["message"].Label = "You've been timed out."
 					client_socket.close()
+					APP.children["renew-button"].Show()
 					return
 				case 252:
 					APP.children["message"].Label = "Linking successful."
@@ -61,7 +62,7 @@ def client():
 
 def app(after_start):
 	APP.button("stop-button", "Stop", stop)
-	APP.button("renew-button", "Renew", after_start)
+	APP.button("renew-button", "Renew", after_start).Hide()
 	APP.text("message", "Loading...")
 	APP.mainloop(after_start)
 
