@@ -32,12 +32,15 @@ def client():
 	linking_code = str(rand())[2:8]
 	client_socket.sendall(b'`' + bytes(linking_code, 'utf-8'))
 	while True:
+		# exec(input("\u001b[34m>>> \u001b[0m")); continue # just for testing
 		try:
 			dataIn = int.from_bytes(client_socket.recv(1), "big")
 		except Exception:
 			APP.children["message"].Label = "The socket is closed."
 			client_socket.close()
 			return
+		APP.setBackgroundColour(dataIn)
+		APP.setMessageColour((dataIn+128) % 256)
 		if dataIn >= len(TABLE):
 			match dataIn:
 				case 254:
@@ -49,7 +52,7 @@ def client():
 				case 252:
 					APP.children["message"].Label = "Linking successful."
 				case 255 | _:
-					APP.children["message"].Label = "An unknown error ocurred."
+					APP.children["message"].Label = f"An unknown error ocurred: {dataIn}."
 			continue
 		APP.children["message"].Label = f"Sent character {dataIn:3}: {TABLE[dataIn]}"
 		# sleep(2) # just for testing

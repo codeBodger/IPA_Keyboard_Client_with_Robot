@@ -7,9 +7,10 @@ import wx
 class GUI:
     def __init__(self, title: str) -> None:
         self.app = wx.App()
-        self.frame = wx.Frame(None, title=title)
+        self.frame = wx.Frame(None, title=title, size=(500,230), style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
         self.frame.Show()
         self.children: dict[str,wx.Window] = dict()
+        self.panel = wx.Panel(self.frame, size=self.frame.Size)
     
     def mainloop(self, *funcs):
         for func in funcs: func()
@@ -23,7 +24,10 @@ class GUI:
         if not pos: pos = self.__prev_end(offset)
         if id in self.children:
             raise KeyError(f'The id "{id}" is already in use!')
-        b = wx.Button(self.frame, label=label, pos=pos, **kwargs)
+        kwargs["size"] = kwargs.get("size", (100, 40))
+        b = wx.Button(self.panel, label=label, pos=pos, **kwargs)
+        b.SetFont(wx.Font(wx.FontInfo(16)))
+        b.SetCursor(wx.Cursor(wx.CURSOR_HAND))
         self.frame.Bind(wx.EVT_BUTTON, lambda _: command(), b)
         self.children[id] = b
         return b
@@ -32,12 +36,22 @@ class GUI:
         if not pos: pos = self.__prev_end(offset)
         if id in self.children:
             raise KeyError(f'The id "{id}" is already in use!')
-        t = wx.StaticText(self.frame, label=label, pos=pos, **kwargs)
+        t = wx.StaticText(self.panel, label=label, pos=pos, **kwargs)
+        t.SetFont(wx.Font(wx.FontInfo(26)))
         self.children[id] = t
         return t
     
     def __prev_end(self, offset: tuple[int,int]) -> tuple[int,int]:
-        if self.frame.Children:
-            pos = self.frame.Children[-1].GetRect().GetBottomLeft().Get()
+        if self.panel.Children:
+            pos = self.panel.Children[-1].GetRect().GetBottomLeft().Get()
             return (pos[0] + offset[0] , pos[1] + offset[1])
         return wx.DefaultPosition.Get()
+    
+    def setBackgroundColour(self, colour: int):
+        self.frame.SetBackgroundColour((colour, colour, colour, 255))
+        self.children.get("background", wx.Panel(self.frame)).Destroy()
+        self.children["background"] = wx.Panel(self.frame, size=self.frame.Size)
+    
+    def setMessageColour(self, colour: int):
+        self.children["message"].SetForegroundColour((colour, colour, colour, 255))
+        self.children["message"].Label += ""
