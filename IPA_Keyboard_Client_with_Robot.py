@@ -31,6 +31,7 @@ KEY = bytes(rand64str(18), 'utf-8')
 
 def stop():
 	APP.do(APP.destroy)
+	client_socket.sendall(b'\xff' + KEY)
 	client_socket.close()
 	exit()
 
