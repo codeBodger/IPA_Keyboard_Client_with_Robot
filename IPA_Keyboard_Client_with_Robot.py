@@ -8,7 +8,7 @@ import socket
 from pynput.keyboard import Controller
 from table import TABLE
 from random import choice, random as rand
-# from time import sleep # just for testing
+from time import sleep
 from gui import GUI
 from threading import Thread
 
@@ -75,7 +75,7 @@ def client_loop():
 				case 254:
 					if linking_key is None: APP.do(set_message, "Somehow got connection\nsuccessful after renew.")
 					APP.do(set_message, f"Connection successful.\nLinking key: {linking_key}")
-					linking_key = None
+					daemon(alert_expired)()
 				case 253:
 					APP.do(set_message, "You've been timed out.")
 					client_socket.close()
@@ -83,8 +83,10 @@ def client_loop():
 					return
 				case 252:
 					APP.do(set_message, "Linking successful.")
+					linking_key = None
 				case 251:
 					APP.do(set_message, "Linking Key in use.\nTry again.")
+					linking_key = None
 				case 250:
 					APP.do(set_message, "No renew necessary.\nKey already in use.")
 					APP.do(APP.children["renew-button"].Hide)
@@ -94,7 +96,7 @@ def client_loop():
 				case 248:
 					if linking_key is None: APP.do(set_message, "Somehow got linking key\ncreated after renew.")
 					APP.do(set_message, f"New linking key created.\nLinking key: {linking_key}")
-					linking_key = None
+					daemon(alert_expired)()
 				case 247:
 					APP.do(set_message, "Long Key in use.\nEnsure random generation.")
 				case 255 | _:
@@ -107,6 +109,13 @@ def client_loop():
 
 def set_message(value: str):
     APP.children["message"].Label = value
+
+def alert_expired():
+	global linking_key
+	sleep(5*60)
+	if linking_key != None:
+		APP.do(set_message, "Linking key expired.")
+		linking_key = None
 
 def daemon(target):
 	return lambda: Thread(target=target, daemon=True).start()
