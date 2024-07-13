@@ -68,9 +68,7 @@ def client_loop():
 			client_socket.close()
 			return
 		APP.do(APP.setBackgroundColour, dataIn)
-		# APP.setBackgroundColour(dataIn)
 		APP.do(APP.setMessageColour, (dataIn+128) % 256)
-		# APP.setMessageColour((dataIn+128) % 256)
 		if dataIn >= len(TABLE):
 			match dataIn:
 				case 254:
@@ -81,7 +79,6 @@ def client_loop():
 					APP.do(set_message, "You've been timed out.")
 					client_socket.close()
 					APP.do(APP.children["renew-button"].Show)
-					# APP.children["renew-button"].Show()
 					return
 				case 252:
 					APP.do(set_message, "Linking successful.")
@@ -90,11 +87,9 @@ def client_loop():
 				case 250:
 					APP.do(set_message, "No renew necessary.\nKey already in use.")
 					APP.do(APP.children["renew-button"].Hide)
-					# APP.children["renew-button"].Hide()
 				case 249:
 					APP.do(set_message, "Renew successful.")
 					APP.do(APP.children["renew-button"].Hide)
-					# APP.children["renew-button"].Hide()
 				case 248:
 					if linking_key is None: APP.do(set_message, "Somehow got connection successful after renew.")
 					APP.do(set_message, f"New linking key created.\nLinking key: {linking_key}")
