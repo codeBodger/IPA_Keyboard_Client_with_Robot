@@ -30,7 +30,7 @@ KEY = bytes(rand64str(18), 'utf-8')
 # KEY = b'0' # just for testing
 
 def stop():
-	APP.destroy()
+	APP.do(APP.destroy)
 	client_socket.close()
 	exit()
 
