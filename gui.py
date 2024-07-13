@@ -41,6 +41,9 @@ class GUI:
         self.children[id] = t
         return t
     
+    def do(self, func, *args, **kwargs):
+        wx.CallAfter(func, *args, **kwargs)
+
     def __prev_end(self, offset: tuple[int,int]) -> tuple[int,int]:
         if self.panel.Children:
             pos = self.panel.Children[-1].GetRect().GetBottomLeft().Get()

@@ -64,48 +64,53 @@ def client_loop():
 		try:
 			dataIn = int.from_bytes(client_socket.recv(1), "big")
 		except Exception:
-			set_message("The socket is closed.")
+			APP.do(set_message, "The socket is closed.")
 			client_socket.close()
 			return
-		APP.setBackgroundColour(dataIn)
-		APP.setMessageColour((dataIn+128) % 256)
+		APP.do(APP.setBackgroundColour, dataIn)
+		# APP.setBackgroundColour(dataIn)
+		APP.do(APP.setMessageColour, (dataIn+128) % 256)
+		# APP.setMessageColour((dataIn+128) % 256)
 		if dataIn >= len(TABLE):
 			match dataIn:
 				case 254:
-					if linking_key is None: set_message("Somehow got connection successful after renew.")
-					set_message(f"Connection successful.\nLinking key: {linking_key}")
+					if linking_key is None: APP.do(set_message, "Somehow got connection successful after renew.")
+					APP.do(set_message, f"Connection successful.\nLinking key: {linking_key}")
 					linking_key = None
 				case 253:
-					set_message("You've been timed out.")
+					APP.do(set_message, "You've been timed out.")
 					client_socket.close()
-					APP.children["renew-button"].Show()
+					APP.do(APP.children["renew-button"].Show)
+					# APP.children["renew-button"].Show()
 					return
 				case 252:
-					set_message("Linking successful.")
+					APP.do(set_message, "Linking successful.")
 				case 251:
-					set_message("Linking Key in use.\nTry again.")
+					APP.do(set_message, "Linking Key in use.\nTry again.")
 				case 250:
-					set_message("No renew necessary.\nKey already in use.")
-					APP.children["renew-button"].Hide()
+					APP.do(set_message, "No renew necessary.\nKey already in use.")
+					APP.do(APP.children["renew-button"].Hide)
+					# APP.children["renew-button"].Hide()
 				case 249:
-					set_message("Renew successful.")
-					APP.children["renew-button"].Hide()
+					APP.do(set_message, "Renew successful.")
+					APP.do(APP.children["renew-button"].Hide)
+					# APP.children["renew-button"].Hide()
 				case 248:
-					if linking_key is None: set_message("Somehow got connection successful after renew.")
-					set_message(f"New linking key created.\nLinking key: {linking_key}")
+					if linking_key is None: APP.do(set_message, "Somehow got connection successful after renew.")
+					APP.do(set_message, f"New linking key created.\nLinking key: {linking_key}")
 					linking_key = None
 				case 247:
-					set_message("Long Key in use.\nEnsure random generation.")
+					APP.do(set_message, "Long Key in use.\nEnsure random generation.")
 				case 255 | _:
-					set_message(f"An unknown error ocurred: {dataIn}.")
+					APP.do(set_message, f"An unknown error ocurred: {dataIn}.")
 			continue
-		set_message(f"Sent character {dataIn:3}: {TABLE[dataIn]}")
+		APP.do(set_message, f"Sent character {dataIn:3}: {TABLE[dataIn]}")
 		# sleep(2) # just for testing
 		KEYBOARD.press(TABLE[dataIn])
 		KEYBOARD.release(TABLE[dataIn])
 
 def set_message(value: str):
-	APP.children["message"].Label = value
+    APP.children["message"].Label = value
 
 def daemon(target):
 	return lambda: Thread(target=target, daemon=True).start()
