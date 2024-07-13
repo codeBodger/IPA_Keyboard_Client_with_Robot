@@ -7,7 +7,7 @@
 import socket
 from pynput.keyboard import Controller
 from table import TABLE
-from random import random as rand
+from random import choice, random as rand
 # from time import sleep # just for testing
 from gui import GUI
 from threading import Thread
@@ -19,18 +19,46 @@ KEYBOARD = Controller()
 
 APP = GUI("IPA Keyboard Client")
 
+def rand64str(length: int) -> str:
+    ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'
+    out = ""
+    for i in range(length):
+        out += choice(ALPHABET)
+    return out
+
+KEY = bytes(rand64str(18), 'utf-8')
+# KEY = b'0' # just for testing
+
 def stop():
 	APP.destroy()
 	client_socket.close()
 	exit()
 
-def client():
-	global client_socket
+def new_key(activity: bytes = b'\x02'):
+	global linking_key
+	linking_key = str(rand())[2:8]
+	# linking_key = "123456" # just for testing
+	client_socket.sendall(activity + bytes(linking_key, 'utf-8') + KEY)
+
+def connect():
+	global client_socket 
 	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	client_socket.connect((HOST, PORT))
-	# s.sendall(b'`asdf') # just for testing
-	linking_code = str(rand())[2:8]
-	client_socket.sendall(b'`' + bytes(linking_code, 'utf-8'))
+
+def start():
+	connect()
+	new_key(b'\x00')
+	client_loop()
+
+def renew():
+	global linking_key
+	connect()
+	client_socket.sendall(b'\x01' + KEY)
+	linking_key = None
+	client_loop()
+
+def client_loop():
+	global linking_key
 	while True:
 		# exec(input("\u001b[34m>>> \u001b[0m")); continue # just for testing
 		try:
@@ -44,7 +72,9 @@ def client():
 		if dataIn >= len(TABLE):
 			match dataIn:
 				case 254:
-					APP.children["message"].Label = f"Connection successful.\nLinking code: {linking_code}"
+					if linking_key is None: APP.children["message"].Label = "Somehow got connection successful after renew."
+					APP.children["message"].Label = f"Connection successful.\nLinking key: {linking_key}"
+					linking_key = None
 				case 253:
 					APP.children["message"].Label = "You've been timed out."
 					client_socket.close()
@@ -52,6 +82,20 @@ def client():
 					return
 				case 252:
 					APP.children["message"].Label = "Linking successful."
+				case 251:
+					APP.children["message"].Label = "Linking Key in use.\nTry again."
+				case 250:
+					APP.children["message"].Label = "No renew necessary.\nKey already in use."
+					APP.children["renew-button"].Hide()
+				case 249:
+					APP.children["message"].Label = "Renew successful."
+					APP.children["renew-button"].Hide()
+				case 248:
+					if linking_key is None: APP.children["message"].Label = "Somehow got connection successful after renew."
+					APP.children["message"].Label = f"New linking key created.\nLinking key: {linking_key}"
+					linking_key = None
+				case 247:
+					APP.children["message"].Label = "Long Key in use.\nEnsure random generation."
 				case 255 | _:
 					APP.children["message"].Label = f"An unknown error ocurred: {dataIn}."
 			continue
@@ -60,14 +104,18 @@ def client():
 		KEYBOARD.press(TABLE[dataIn])
 		KEYBOARD.release(TABLE[dataIn])
 
-def app(after_start):
+def daemon(target):
+	return lambda: Thread(target=target, daemon=True).start()
+
+def app():
 	APP.button("stop-button", "Stop", stop)
-	APP.button("renew-button", "Renew", after_start).Hide()
+	APP.button("renew-button", "Renew", daemon(renew)).Hide()
 	APP.text("message", "Loading...")
-	APP.mainloop(after_start)
+	APP.button("new-key-button", "New\nLinking\nKey", new_key, pos=(104,-1), size=(100,85))
+	APP.mainloop(daemon(start))
 
 def main():
-	app(lambda: Thread(target=client, daemon=True).start())
+	app()
 
 if __name__ == "__main__":
 	main()
