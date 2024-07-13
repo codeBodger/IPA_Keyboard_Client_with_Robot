@@ -27,7 +27,7 @@ def rand64str(length: int) -> str:
     return out
 
 KEY = bytes(rand64str(18), 'utf-8')
-# KEY = b'0' # just for testing
+# KEY = b'000000000000000000' # just for testing
 
 def stop():
 	APP.do(APP.destroy)
