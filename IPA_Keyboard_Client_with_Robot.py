@@ -72,7 +72,7 @@ def client_loop():
 		if dataIn >= len(TABLE):
 			match dataIn:
 				case 254:
-					if linking_key is None: APP.do(set_message, "Somehow got connection successful after renew.")
+					if linking_key is None: APP.do(set_message, "Somehow got connection\nsuccessful after renew.")
 					APP.do(set_message, f"Connection successful.\nLinking key: {linking_key}")
 					linking_key = None
 				case 253:
@@ -91,13 +91,13 @@ def client_loop():
 					APP.do(set_message, "Renew successful.")
 					APP.do(APP.children["renew-button"].Hide)
 				case 248:
-					if linking_key is None: APP.do(set_message, "Somehow got connection successful after renew.")
+					if linking_key is None: APP.do(set_message, "Somehow got linking key\ncreated after renew.")
 					APP.do(set_message, f"New linking key created.\nLinking key: {linking_key}")
 					linking_key = None
 				case 247:
 					APP.do(set_message, "Long Key in use.\nEnsure random generation.")
 				case 255 | _:
-					APP.do(set_message, f"An unknown error ocurred: {dataIn}.")
+					APP.do(set_message, f"An unknown error ocurred:\n{dataIn}.")
 			continue
 		APP.do(set_message, f"Sent character {dataIn:3}: {TABLE[dataIn]}")
 		# sleep(2) # just for testing
